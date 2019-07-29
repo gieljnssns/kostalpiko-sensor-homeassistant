@@ -1,0 +1,12 @@
+{
+    "domain": "kostal",
+    "name": "Kostal",
+    "documentation": "none",
+    "requirements": [
+        "kostalpyko==0.1"
+    ],
+    "dependencies": [],
+    "codeowners": [
+        "@gieljnssns"
+    ]
+}
