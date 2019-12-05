@@ -3,7 +3,7 @@
     "name": "Kostal",
     "documentation": "https://github.com/gieljnssns/kostalpiko-sensor-homeassistant",
     "requirements": [
-        "kostalpyko==0.2"
+        "kostalpyko==0.3"
     ],
     "dependencies": [],
     "codeowners": [
