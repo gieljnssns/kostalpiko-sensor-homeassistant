@@ -1,5 +1,5 @@
 # kostalpiko-sensor-homeassistant
-A custom component to get the readings of a Kostal Piko inverter
+A custom component to get the readings of a Kostal Piko inverter NOT the Plenticore inverter
 
 ```
 sensor:
