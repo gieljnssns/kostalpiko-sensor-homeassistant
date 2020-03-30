@@ -1,6 +1,15 @@
 # kostalpiko-sensor-homeassistant
 A custom component to get the readings of a Kostal Piko inverter NOT the Plenticore inverter
 
+Since the component is based on web scraping from the web server interface, your web server should look like this.
+You can try like this
+```
+http://pvserver:<YOUR_PASSWORD>@<YOUR_INVERTER_IP>/index.fhtml
+```
+Otherwise it will not work
+
+![Alt text](https://github.com/gieljnssns/kostalpiko-sensor-homeassistant/blob/master/img/Schermafbeelding%202020-03-30%20om%2011.25.18.png?raw=true "Optional Title")
+
 ```
 sensor:
   - platform: kostal
