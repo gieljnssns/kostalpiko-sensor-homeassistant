@@ -17,6 +17,10 @@ sensor:
     username: !secret kostal_username
     password: !secret kostal_password
     monitored_conditions:
+      - solar_generator_power  # only available when using a BA sensor
+      - consumption_phase_1    # only available when using a BA sensor
+      - consumption_phase_2    # only available when using a BA sensor
+      - consumption_phase_3    # only available when using a BA sensor
       - current_power
       - total_energy
       - daily_energy
