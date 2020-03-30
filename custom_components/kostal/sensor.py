@@ -1,9 +1,12 @@
 """
 Support for Kostal Piko inverters.
 For more details about this component, please refer to the documentation at
-https://home-assistant.io/components/sensor.piko/
+https://github.com/gieljnssns/kostalpiko-sensor-homeassistant
 """
+from datetime import timedelta
 import logging
+
+from kostalpyko.kostalpyko import Piko
 
 import voluptuous as vol
 
@@ -11,12 +14,10 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
     CONF_USERNAME, CONF_PASSWORD, CONF_HOST, CONF_MONITORED_CONDITIONS)
 from homeassistant.helpers.entity import Entity
-# from homeassistant.helpers.restore_state import async_get_last_state
+from homeassistant.util import Throttle
 import homeassistant.helpers.config_validation as cv
 
-# REQUIREMENTS = [
-#     'https://github.com/gieljnssns/KostalPikoPy/archive/'
-#     'master.zip#pikopy==1.1.0']
+MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=30)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,15 +55,14 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up Piko inverter."""
-    from kostalpyko.kostalpyko import Piko
-
     piko = Piko(config[CONF_HOST],
                 config[CONF_USERNAME],
                 config[CONF_PASSWORD])
 
     dev = []
+    data = PikoData(piko)
     for sensor in config[CONF_MONITORED_CONDITIONS]:
-        dev.append(PikoInverter(piko, sensor))
+        dev.append(PikoInverter(data, sensor))
 
     add_entities(dev)
 
@@ -101,42 +101,129 @@ class PikoInverter(Entity):
         return self._icon
 
     def update(self):
+        """Update data."""
+        self.piko.update()
+        data = self.piko.data
+        ba_data = self.piko.ba_data
+        if ba_data is not None:
+            if self.type == 'solar_generator_power':
+                if len(ba_data) > 1:
+                    self._state = ba_data[5]
+                else:
+                    return "No BA sensor installed"
+            elif self.type == 'consumption_phase_1':
+                if len(ba_data) > 1:
+                    self._state = ba_data[8]
+                else:
+                    return "No BA sensor installed"
+            elif self.type == 'consumption_phase_2':
+                if len(ba_data) > 1:
+                    self._state = ba_data[9]
+                else:
+                    return "No BA sensor installed"
+            elif self.type == 'consumption_phase_3':
+                if len(ba_data) > 1:
+                    self._state = ba_data[10]
+                else:
+                    return "No BA sensor installed"
+        if data is not None:
+            if self.type == 'current_power':
+                if len(data) > 1:
+                    self._state = data[0]
+                else:
+                    return None
+            elif self.type == 'total_energy':
+                if len(data) > 1:
+                    self._state = data[1]
+                else:
+                    return None
+            elif self.type == 'daily_energy':
+                if len(data) > 1:
+                    self._state = data[2]
+                else:
+                    return None
+            elif self.type == 'string1_voltage':
+                if len(data) > 1:
+                    self._state = data[3]
+                else:
+                    return None
+            elif self.type == 'string1_current':
+                if len(data) > 1:
+                    self._state = data[5]
+            elif self.type == 'string2_voltage':
+                if len(data) > 1:
+                    self._state = data[7]
+                else:
+                    return None
+            elif self.type == 'string2_current':
+                if len(data) > 1:
+                    self._state = data[9]
+                else:
+                    return None
+            elif self.type == 'string3_voltage':
+                if len(data) > 1:
+                    self._state = data[0]
+                else:
+                    return None
+            elif self.type == 'string3_current':
+                if len(data) > 1:
+                    self._state = data[0]
+                else:
+                    return None
+            elif self.type == 'l1_voltage':
+                if len(data) > 1:
+                    self._state = data[4]
+                else:
+                    return None
+            elif self.type == 'l1_power':
+                if len(data) > 1:
+                    self._state = data[6]
+                else:
+                    return None
+            elif self.type == 'l2_voltage':
+                if len(data) > 1:
+                    self._state = data[8]
+                else:
+                    return None
+            elif self.type == 'l2_power':
+                if len(data) > 1:
+                    self._state = data[10]
+                else:
+                    return None
+            elif self.type == 'l3_voltage':
+                if len(data) > 1:
+                    if len(data) < 14:
+                        # 2 Strings
+                        self._state = data[11]
+                    else:
+                        # 3 Strings
+                        self._state = data[12]
+                else:
+                    return None
+            elif self.type == 'l3_power':
+                if len(data) > 1:
+                    if len(data) < 14:
+                        # 2 Strings
+                        self._state = data[12]
+                    else:
+                        # 3 Strings
+                        self._state = data[14]
+                else:
+                    return None
+
+
+class PikoData(Entity):
+    """Representation of a Piko inverter."""
+    def __init__(self, piko):
+        """Initialize the data object."""
+        self.data = []
+        self.ba_data = []
+        self.piko = piko
+    
+    @Throttle(MIN_TIME_BETWEEN_UPDATES)
+    def update(self):
         """Update inverter data."""
-        if self.type == 'solar_generator_power':
-            self._state = self.piko.get_solar_generator_power()
-        elif self.type == 'consumption_phase_1':
-            self._state = self.piko.get_consumption_phase_1()
-        elif self.type == 'consumption_phase_2':
-            self._state = self.piko.get_consumption_phase_2()
-        elif self.type == 'consumption_phase_3':
-            self._state = self.piko.get_consumption_phase_3()
-        elif self.type == 'current_power':
-            self._state = self.piko.get_current_power()
-        elif self.type == 'total_energy':
-            self._state = self.piko.get_total_energy()
-        elif self.type == 'daily_energy':
-            self._state = self.piko.get_daily_energy()
-        elif self.type == 'string1_voltage':
-            self._state = self.piko.get_string1_voltage()
-        elif self.type == 'string1_current':
-            self._state = self.piko.get_string1_current()
-        elif self.type == 'string2_voltage':
-            self._state = self.piko.get_string2_voltage()
-        elif self.type == 'string2_current':
-            self._state = self.piko.get_string2_current()
-        elif self.type == 'string3_voltage':
-            self._state = self.piko.get_string3_voltage()
-        elif self.type == 'string3_current':
-            self._state = self.piko.get_string3_current()
-        elif self.type == 'l1_voltage':
-            self._state = self.piko.get_l1_voltage()
-        elif self.type == 'l1_power':
-            self._state = self.piko.get_l1_power()
-        elif self.type == 'l2_voltage':
-            self._state = self.piko.get_l2_voltage()
-        elif self.type == 'l2_power':
-            self._state = self.piko.get_l2_power()
-        elif self.type == 'l3_voltage':
-            self._state = self.piko.get_l3_voltage()
-        elif self.type == 'l3_power':
-            self._state = self.piko.get_l3_power()
+        self.data = self.piko._get_raw_content()
+        self.ba_data = self.piko._get_content_of_own_consumption()
+        _LOGGER.debug(self.data)
+        _LOGGER.debug(self.ba_data)
