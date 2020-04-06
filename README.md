@@ -34,4 +34,5 @@ sensor:
       - l2_power
       - l3_voltage
       - l3_power
+      - status
 ```
