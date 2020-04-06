@@ -39,7 +39,7 @@ SENSOR_TYPES = {
     'l2_power': ['L2 power', 'W', 'mdi:power-plug'],
     'l3_voltage': ['L3 voltage', 'V', 'mdi:current-ac'],
     'l3_power': ['L3 power', 'W', 'mdi:power-plug'],
-    'status': ['Status', '', 'mdi:solar-power'],
+    'status': ['Status', None, 'mdi:solar-power'],
 }
 
 
