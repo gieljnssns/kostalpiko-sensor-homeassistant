@@ -39,6 +39,7 @@ SENSOR_TYPES = {
     'l2_power': ['L2 power', 'W', 'mdi:power-plug'],
     'l3_voltage': ['L3 voltage', 'V', 'mdi:current-ac'],
     'l3_power': ['L3 power', 'W', 'mdi:power-plug'],
+    'status': ['Status', None, 'mdi:solar-power'],
 }
 
 
@@ -192,7 +193,7 @@ class PikoInverter(Entity):
                     return None
             elif self.type == 'l3_voltage':
                 if len(data) > 1:
-                    if len(data) < 14:
+                    if len(data) < 15:
                         # 2 Strings
                         self._state = data[11]
                     else:
@@ -202,12 +203,22 @@ class PikoInverter(Entity):
                     return None
             elif self.type == 'l3_power':
                 if len(data) > 1:
-                    if len(data) < 14:
+                    if len(data) < 15:
                         # 2 Strings
                         self._state = data[12]
                     else:
                         # 3 Strings
                         self._state = data[14]
+                else:
+                    return None
+            elif self.type == 'status':
+                if len(data) > 1:
+                    if len(data) < 15:
+                        # 2 Strings
+                        self._state = data[13]
+                    else:
+                        # 3 Strings
+                        self._state = data[15]
                 else:
                     return None
 
