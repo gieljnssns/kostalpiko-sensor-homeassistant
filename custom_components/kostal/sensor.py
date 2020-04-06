@@ -1,8 +1,4 @@
-"""
-Support for Kostal Piko inverters.
-For more details about this component, please refer to the documentation at
-https://github.com/gieljnssns/kostalpiko-sensor-homeassistant
-"""
+"""Support for Kostal Piko inverters."""
 from datetime import timedelta
 import logging
 
@@ -12,7 +8,7 @@ import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
-    CONF_USERNAME, CONF_PASSWORD, CONF_HOST, CONF_MONITORED_CONDITIONS)
+    CONF_USERNAME, CONF_PASSWORD, CONF_HOST, CONF_MONITORED_CONDITIONS, CONF_NAME)
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
 import homeassistant.helpers.config_validation as cv
@@ -20,6 +16,8 @@ import homeassistant.helpers.config_validation as cv
 MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=30)
 
 _LOGGER = logging.getLogger(__name__)
+
+DEFAULT_NAME = "kostal_piko"
 
 SENSOR_TYPES = {
     'solar_generator_power': ['Solar generator power', 'W', 'mdi:solar-power'],
@@ -50,6 +48,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_MONITORED_CONDITIONS):
         vol.All(cv.ensure_list, [vol.In(list(SENSOR_TYPES))]),
+    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
 })
 
 
@@ -62,7 +61,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     dev = []
     data = PikoData(piko)
     for sensor in config[CONF_MONITORED_CONDITIONS]:
-        dev.append(PikoInverter(data, sensor))
+        dev.append(PikoInverter(data, sensor, config[CONF_NAME]))
 
     add_entities(dev)
 
@@ -70,9 +69,10 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 class PikoInverter(Entity):
     """Representation of a Piko inverter."""
 
-    def __init__(self, piko_data, sensor_type):
+    def __init__(self, piko_data, sensor_type, name):
         """Initialize the sensor."""
-        self._name = SENSOR_TYPES[sensor_type][0]
+        self._sensor = SENSOR_TYPES[sensor_type][0]
+        self._name = name
         self.type = sensor_type
         self.piko = piko_data
         self._state = None
@@ -83,7 +83,7 @@ class PikoInverter(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return '{} {}'.format('Kostal Piko', self._name)
+        return '{} {}'.format(self._name, self._sensor)
 
     @property
     def state(self):
