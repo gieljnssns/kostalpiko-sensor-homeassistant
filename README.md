@@ -13,7 +13,7 @@ Otherwise it will not work
 ```
 sensor:
   - platform: kostal
-    host: !secret kostal_host
+    host: !secret kostal_host  # "http://192.168.xx.xx"
     username: !secret kostal_username
     password: !secret kostal_password
     monitored_conditions:
