@@ -152,12 +152,22 @@ class PikoInverter(Entity):
                     return None
             elif self.type == "string3_voltage":
                 if len(data) > 1:
-                    self._state = data[0]
+                    if len(data) < 15:
+                        # String 3 not installed
+                        return None
+                    else:
+                        # 3 Strings
+                        self._state = data[11]
                 else:
                     return None
             elif self.type == "string3_current":
                 if len(data) > 1:
-                    self._state = data[0]
+                    if len(data) < 15:
+                        # String 3 not installed
+                        return None
+                    else:
+                        # 3 Strings
+                        self._state = data[13]
                 else:
                     return None
             elif self.type == "l1_voltage":
