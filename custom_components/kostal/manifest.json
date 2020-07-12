@@ -1,12 +1,12 @@
 {
-    "domain": "kostal",
-    "name": "Kostal",
-    "documentation": "https://github.com/gieljnssns/kostalpiko-sensor-homeassistant",
-    "requirements": [
-        "kostalpyko==0.4"
-    ],
-    "dependencies": [],
-    "codeowners": [
-        "@gieljnssns"
-    ]
+  "domain": "kostal",
+  "name": "Kostal",
+  "config_flow": true,
+  "documentation": "https://github.com/gieljnssns/kostalpiko-sensor-homeassistant",
+  "requirements": ["kostalpyko==0.5"],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": ["@gieljnssns"]
 }
