@@ -1,0 +1,20 @@
+{
+  "config": {
+    "title": "Kostal",
+    "step": {
+      "user": {
+        "data": {
+          "host": "Dirección ip del inversor",
+          "password": "Contraseña ip del inversor",
+          "username": "Usuario ip del inversor"
+        }
+      }
+    },
+    "error": {
+      "host_exists": "Este host ya está configurado"
+    },
+    "abort": {
+      "host_exists": "Este host ya está configurado"
+    }
+  }
+}
