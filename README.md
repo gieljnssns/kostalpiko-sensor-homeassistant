@@ -1,3 +1,5 @@
+## I will archive this custom component since my Kostal inverter is broken and I can not test any changes, you should try https://github.com/rcasula/kostalpiko-homeassistant
+
 # kostalpiko-sensor-homeassistant
 A custom component to get the readings of a Kostal Piko inverter NOT the Plenticore inverter
 
