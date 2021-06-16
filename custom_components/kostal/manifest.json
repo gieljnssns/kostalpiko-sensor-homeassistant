@@ -1,6 +1,7 @@
 {
   "domain": "kostal",
   "name": "Kostal",
+  "version": "1.0.0",
   "config_flow": true,
   "documentation": "https://github.com/gieljnssns/kostalpiko-sensor-homeassistant",
   "requirements": ["kostalpyko==0.5"],
